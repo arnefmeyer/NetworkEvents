@@ -166,6 +166,7 @@ String NetworkEvents::handleSpecialMessages(const String& s)
                 String params = s.substring (cmd.length()).trim();
                 StringPairArray dict = parseNetworkMessage (params);
 
+                bool setRecNodeDir = false;
                 StringArray keys = dict.getAllKeys();
                 for (int i = 0; i < keys.size(); ++i)
                 {
@@ -179,9 +180,20 @@ String NetworkEvents::handleSpecialMessages(const String& s)
                             CoreServices::createNewRecordingDir();
                         }
                     }
+                    else if (key.compareIgnoreCase("RecNodes") == 0)
+                    {
+                      if (value.compareIgnoreCase ("1") == 0)
+                      {
+                          setRecNodeDir = true;
+                      }
+                    }
                     else if (key.compareIgnoreCase ("RecDir") == 0)
                     {
                         CoreServices::setRecordingDirectory (value);
+                        if (setRecNodeDir)
+                        {
+                          CoreServices::RecordNode::setRecordingDirectory(value);
+                        }
                     }
                     else if (key.compareIgnoreCase ("PrependText") == 0)
                     {
